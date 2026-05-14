@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA EXTRACTOR X-150 | المنصة الأسطورية</title>
+    <title>ULTRA EXTRACTOR X-150 | PRO EDITION</title>
     
-    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/tesseract.js@v4.0.1/dist/tesseract.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -18,7 +17,6 @@
             --primary: #00ff88;
             --secondary: #60a5fa;
             --bg-dark: #020617;
-            --card-bg: rgba(15, 23, 42, 0.7);
         }
 
         body {
@@ -26,52 +24,279 @@
             background-color: var(--bg-dark);
             color: #f1f5f9;
             background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
-            min-height: 100 screen;
+            min-height: 100vh;
         }
 
         .cyber-card {
-            background: var(--card-bg);
+            background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .cyber-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+            transition: 0.3s ease;
         }
 
         .gradient-text {
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 900;
         }
 
         .drop-zone-active {
-            border: 2px dashed var(--primary);
+            border: 2px dashed var(--primary) !important;
             background: rgba(0, 255, 136, 0.05);
         }
 
         .glow-btn {
             background: linear-gradient(135deg, #00ff88 0%, #00bd65 100%);
             color: #020617;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            font-weight: 900;
+            transition: all 0.3s ease;
         }
 
-        .glow-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        .glow-btn:disabled {
+            filter: grayscale(1);
+            cursor: not-allowed;
         }
 
-        .shimmer {
-            position: relative;
-            overflow: hidden;
+        #logArea::-webkit-scrollbar { width: 4px; }
+        #logArea::-webkit-scrollbar-thumb { background: var(--secondary); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-4xl font-black gradient-text tracking-tighter">ULTRA EXTRACTOR X-150</h1>
+                <p class="text-slate-400 text-sm mt-1">إصدار المعالجة المتعددة المستقر (الحد الأقصى 10 صور)</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="cyber-card px-5 py-2 text-center">
+                    <span class="block text-[10px] text-slate-500 uppercase">الأرقام الفريدة</span>
+                    <span id="uniqueCount" class="text-2xl font-bold text-primary">0</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-4 space-y-4">
+                <!-- Dropzone -->
+                <div id="dropZone" class="cyber-card p-8 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-secondary transition-all">
+                    <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                    <i data-lucide="upload-cloud" class="w-12 h-12 text-secondary mb-4"></i>
+                    <h3 class="font-bold">ارفع صورك هنا</h3>
+                    <p class="text-xs text-slate-500 mt-1">يمكنك اختيار حتى 10 صور</p>
+                </div>
+
+                <!-- Control Box -->
+                <div class="cyber-card p-6 space-y-4">
+                    <div>
+                        <label class="text-xs text-slate-400">اسم جهة الاتصال الافتراضي</label>
+                        <input type="text" id="contactName" value="X_Client" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 mt-1 text-sm outline-none focus:border-primary">
+                    </div>
+                    <button id="startBtn" class="w-full glow-btn py-3 rounded-xl flex items-center justify-center gap-2">
+                        <i data-lucide="play" class="w-5 h-5"></i> ابدأ الاستخراج
+                    </button>
+                </div>
+
+                <!-- System Logs -->
+                <div class="cyber-card p-4">
+                    <div class="flex justify-between items-center mb-2 text-[10px] font-bold text-slate-400 uppercase">
+                        <span>سجل النظام</span>
+                        <span id="systemStatus" class="text-secondary tracking-widest">خامل</span>
+                    </div>
+                    <div id="logArea" class="h-40 overflow-y-auto text-[11px] font-mono text-slate-400 bg-black/30 p-3 rounded-lg leading-relaxed">
+                        > نظام X-150 بانتظار الأوامر...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Results -->
+            <div class="lg:col-span-8 flex flex-col gap-4">
+                <div class="cyber-card flex-grow flex flex-col overflow-hidden min-h-[500px]">
+                    <div class="p-4 border-b border-white/5 flex justify-between items-center bg-white/5">
+                        <div class="flex gap-2">
+                            <button onclick="copyAll()" class="p-2 hover:bg-primary/20 rounded-lg transition" title="نسخ الكل"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                            <button onclick="clearAll()" class="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition" title="مسح الجلسة"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="exportVCF()" class="text-xs font-bold bg-slate-800 px-4 py-2 rounded-lg hover:bg-primary hover:text-black transition flex items-center gap-2">
+                                <i data-lucide="users" class="w-4 h-4"></i> تصدير جهات اتصال
+                            </button>
+                            <button onclick="exportTXT()" class="text-xs font-bold bg-slate-800 px-4 py-2 rounded-lg hover:bg-secondary hover:text-black transition flex items-center gap-2">
+                                <i data-lucide="file-down" class="w-4 h-4"></i> نص (TXT)
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow relative">
+                        <textarea id="resultArea" readonly class="w-full h-full bg-transparent p-6 font-mono text-primary text-sm focus:outline-none resize-none" placeholder="// النتائج ستظهر هنا بصيغة قائمة..."></textarea>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="h-1.5 w-full bg-white/5">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        lucide.createIcons();
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const startBtn = document.getElementById('startBtn');
+        const resultArea = document.getElementById('resultArea');
+        const progressBar = document.getElementById('progressBar');
+        const uniqueCountDisp = document.getElementById('uniqueCount');
+        const logArea = document.getElementById('logArea');
+        const systemStatus = document.getElementById('systemStatus');
+
+        let extractedNumbers = new Set();
+        let filesList = [];
+
+        // Drag & Drop Handlers
+        dropZone.onclick = () => fileInput.click();
+        
+        fileInput.onchange = (e) => handleFiles(e.target.files);
+        
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('drop-zone-active'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('drop-zone-active');
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drop-zone-active');
+            handleFiles(e.dataTransfer.files);
+        };
+
+        function handleFiles(files) {
+            const arr = Array.from(files);
+            if (arr.length > 10) {
+                addLog("⚠️ تنبيه: تم اختيار أكثر من 10 صور، سيتم معالجة أول 10 فقط.");
+                filesList = arr.slice(0, 10);
+            } else {
+                filesList = arr;
+            }
+            addLog(`تم تجهيز ${filesList.length} صورة. اضغط "ابدأ الاستخراج".`);
+            systemStatus.innerText = "جاهز";
+            lucide.createIcons();
         }
+
+        function addLog(msg) {
+            const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            logArea.innerHTML += `<div class="mb-1"><span class="text-primary">[${time}]</span> ${msg}</div>`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        // Logic Core
+        startBtn.onclick = async () => {
+            if (filesList.length === 0) return alert("من فضلك ارفع الصور أولاً!");
+
+            startBtn.disabled = true;
+            startBtn.innerHTML = `<span class="animate-pulse">جاري العمل...</span>`;
+            systemStatus.innerText = "جاري المعالجة";
+            
+            for (let i = 0; i < filesList.length; i++) {
+                const file = filesList[i];
+                const progress = Math.round(((i + 1) / filesList.length) * 100);
+                
+                addLog(`جاري معالجة الصورة ${i + 1}: ${file.name}`);
+                
+                try {
+                    // تشغيل المحرك
+                    const result = await Tesseract.recognize(file, 'eng', {
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                systemStatus.innerText = `تحليل ${Math.round(m.progress * 100)}%`;
+                            }
+                        }
+                    });
+
+                    // استخراج الأرقام وتنظيفها (البحث عن أرقام بطول 8-15 خانة)
+                    const matches = result.data.text.match(/\+?\d[\d\s-]{7,14}\d/g) || [];
+                    let foundCount = 0;
+
+                    matches.forEach(num => {
+                        const clean = num.replace(/[\s-]/g, '');
+                        if (clean.length >= 8 && !extractedNumbers.has(clean)) {
+                            extractedNumbers.add(clean);
+                            foundCount++;
+                        }
+                    });
+
+                    addLog(`تم العثور على ${foundCount} أرقام جديدة.`);
+                    progressBar.style.width = `${progress}%`;
+                    updateUI();
+
+                } catch (err) {
+                    addLog(`❌ خطأ في الصورة ${file.name}: ${err.message}`);
+                }
+            }
+
+            // Finish
+            confetti({ particleCount: 150, spread: 60, colors: ['#00ff88', '#60a5fa'] });
+            addLog("✅ اكتملت المهمة بنجاح!");
+            systemStatus.innerText = "اكتمل";
+            startBtn.disabled = false;
+            startBtn.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i> تشغيل دفعة جديدة`;
+            lucide.createIcons();
+        };
+
+        function updateUI() {
+            const list = Array.from(extractedNumbers);
+            resultArea.value = list.join('\n');
+            uniqueCountDisp.innerText = list.length;
+        }
+
+        // Export Functions
+        function copyAll() {
+            navigator.clipboard.writeText(resultArea.value);
+            addLog("تم نسخ جميع الأرقام إلى الحافظة.");
+        }
+
+        function clearAll() {
+            if(confirm("سيتم حذف جميع النتائج، هل أنت متأكد؟")) {
+                extractedNumbers.clear();
+                filesList = [];
+                updateUI();
+                progressBar.style.width = "0%";
+                addLog("تم تصفير جميع البيانات.");
+            }
+        }
+
+        function exportTXT() {
+            if (extractedNumbers.size === 0) return;
+            const blob = new Blob([resultArea.value], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Numbers_${Date.now()}.txt`;
+            a.click();
+        }
+
+        function exportVCF() {
+            if (extractedNumbers.size === 0) return;
+            const nameBase = document.getElementById('contactName').value || 'Contact';
+            const vcf = Array.from(extractedNumbers).map((num, i) => 
+                `BEGIN:VCARD\nVERSION:3.0\nFN:${nameBase}_${i+1}\nTEL;TYPE=CELL:${num}\nEND:VCARD`
+            ).join('\n');
+            
+            const blob = new Blob([vcf], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Contacts_${Date.now()}.vcf`;
+            a.click();
+            addLog("تم تصدير ملف جهات الاتصال بنجاح.");
+        }
+    </script>
+</body>
+</html>        }
 
         .shimmer::after {
             content: "";
