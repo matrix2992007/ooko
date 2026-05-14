@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTRA EXTRACTOR X-150 | المنصة الأسطورية</title>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/tesseract.js@v4.0.1/dist/tesseract.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
+        
+        :root {
+            --primary: #00ff88;
+            --secondary: #60a5fa;
+            --bg-dark: #020617;
+            --card-bg: rgba(15, 23, 42, 0.7);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+            min-height: 100 screen;
+        }
+
+        .cyber-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cyber-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+
+        .drop-zone-active {
+            border: 2px dashed var(--primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .glow-btn {
+            background: linear-gradient(135deg, #00ff88 0%, #00bd65 100%);
+            color: #020617;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glow-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        }
+
+        .shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shimmer::after {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 lg:p-10">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <div class="text-right">
+                <h1 class="text-5xl font-black gradient-text tracking-tighter">ULTRA EXTRACTOR X-150</h1>
+                <p class="text-slate-400 mt-2 flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-primary"></i> معالجة محلية بالكامل (Edge AI)
+                </p>
+            </div>
+            <div class="flex gap-4">
+                <div class="cyber-card px-6 py-3 flex items-center gap-4">
+                    <div class="text-center">
+                        <span class="block text-[10px] text-slate-500 uppercase tracking-widest">فريدة</span>
+                        <span id="uniqueCount" class="text-2xl font-bold text-primary">0</span>
+                    </div>
+                    <div class="w-[1px] h-10 bg-white/10"></div>
+                    <div class="text-center">
+                        <span class="block text-[10px] text-slate-500 uppercase tracking-widest">الصور</span>
+                        <span id="fileCount" class="text-2xl font-bold text-secondary">0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Panel: Upload & Controls -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Dropzone -->
+                <div id="dropZone" class="cyber-card p-12 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center cursor-pointer group">
+                    <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                    <div class="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="upload-cloud" class="w-10 h-10 text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">اسحب الـ 45 صورة هنا</h3>
+                    <p class="text-sm text-slate-500 mt-2">أو اضغط لاختيار الملفات</p>
+                </div>
+
+                <!-- Settings -->
+                <div class="cyber-card p-6 space-y-4">
+                    <h4 class="font-bold flex items-center gap-2 tracking-wide">
+                        <i data-lucide="settings-2" class="w-5 h-5 text-secondary"></i> إعدادات التصدير الذكي
+                    </h4>
+                    <div>
+                        <label class="text-xs text-slate-500">اسم جهة الاتصال</label>
+                        <input type="text" id="contactName" value="Target_Client" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-3 mt-1 outline-none focus:border-primary transition">
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl text-sm">
+                        <span>فلترة المكررات</span>
+                        <div class="w-10 h-5 bg-primary rounded-full relative"><div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div></div>
+                    </div>
+                    <button id="startBtn" class="w-full glow-btn py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3">
+                        <i data-lucide="rocket" class="w-5 h-5"></i> إطلاق الاستخراج
+                    </button>
+                </div>
+
+                <!-- History/Status -->
+                <div class="cyber-card p-6">
+                    <div class="flex justify-between items-center mb-4 text-sm font-bold">
+                        <span>مراقب النظام</span>
+                        <span id="systemStatus" class="text-primary text-[10px] uppercase">جاهز</span>
+                    </div>
+                    <div id="logArea" class="h-32 overflow-y-auto text-[10px] font-mono text-slate-500 space-y-1">
+                        > نظام X-150 نشط...<br>
+                        > بانتظار تحميل البيانات...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Results & Preview -->
+            <div class="lg:col-span-8">
+                <div class="cyber-card h-full flex flex-col overflow-hidden">
+                    <div class="p-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <button onclick="copyAll()" class="p-2 hover:bg-white/5 rounded-lg transition" title="نسخ الكل"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                            <button onclick="clearAll()" class="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition" title="مسح الجلسة"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="exportVCF()" class="bg-white/5 border border-white/10 px-6 py-2 rounded-xl text-sm font-bold hover:bg-primary hover:text-black transition flex items-center gap-2 shadow-xl">
+                                <i data-lucide="phone" class="w-4 h-4"></i> حفظ كـ VCF
+                            </button>
+                            <button onclick="exportTXT()" class="bg-white/5 border border-white/10 px-6 py-2 rounded-xl text-sm font-bold hover:bg-secondary hover:text-black transition flex items-center gap-2 shadow-xl">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> ملف TXT
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="relative flex-grow">
+                        <textarea id="resultArea" readonly class="w-full h-full bg-transparent p-8 font-mono text-primary text-sm focus:outline-none resize-none leading-loose" placeholder="// الأرقام المستخرجة ستظهر هنا بنظام المصفوفات..."></textarea>
+                        
+                        <!-- Country Flags Sidebar -->
+                        <div id="countryStats" class="absolute left-4 top-4 bottom-4 w-48 hidden lg:flex flex-col gap-2 overflow-y-auto">
+                            <!-- JS will inject stats here -->
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="h-2 w-full bg-white/5">
+                        <div id="progressBar" class="h-full bg-primary transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Constants
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const startBtn = document.getElementById('startBtn');
+        const resultArea = document.getElementById('resultArea');
+        const progressBar = document.getElementById('progressBar');
+        const uniqueCountDisp = document.getElementById('uniqueCount');
+        const fileCountDisp = document.getElementById('fileCount');
+        const logArea = document.getElementById('logArea');
+        const systemStatus = document.getElementById('systemStatus');
+
+        let extractedNumbers = new Set();
+        let filesList = [];
+
+        // Drag & Drop
+        dropZone.onclick = () => fileInput.click();
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('drop-zone-active'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('drop-zone-active');
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drop-zone-active');
+            handleFiles(e.dataTransfer.files);
+        };
+
+        fileInput.onchange = (e) => handleFiles(e.target.files);
+
+        function handleFiles(files) {
+            filesList = Array.from(files);
+            fileCountDisp.innerText = filesList.length;
+            addLog(`تم تحميل ${filesList.length} صورة بنجاح.`);
+            systemStatus.innerText = "جاهز للإطلاق";
+        }
+
+        function addLog(msg) {
+            const time = new Date().toLocaleTimeString();
+            logArea.innerHTML += `> [${time}] ${msg}<br>`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        // The Extraction Core
+        startBtn.onclick = async () => {
+            if (filesList.length === 0) return alert("يرجى رفع الصور أولاً");
+            
+            extractedNumbers.clear();
+            startBtn.disabled = true;
+            resultArea.value = "// جاري تشغيل محركات الـ OCR...";
+            progressBar.style.width = "5%";
+            
+            for (let i = 0; i < filesList.length; i++) {
+                const progress = Math.round(((i + 1) / filesList.length) * 100);
+                progressBar.style.width = `${progress}%`;
+                systemStatus.innerText = `معالجة ${i+1}/${filesList.length}`;
+                addLog(`جاري تحليل الصورة #${i+1}...`);
+
+                try {
+                    // Use Tesseract
+                    const result = await Tesseract.recognize(filesList[i], 'eng');
+                    const text = result.data.text;
+                    const numbers = text.match(/\+?\d[\d\s-]{7,15}\d/g) || [];
+                    
+                    numbers.forEach(num => {
+                        let clean = num.replace(/[\s-]/g, '');
+                        if (clean.length >= 8) extractedNumbers.add(clean);
+                    });
+                    
+                    updateUI();
+                } catch (err) {
+                    addLog(`خطأ في الصورة #${i+1}: ${err.message}`);
+                }
+            }
+
+            // Success Blast
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#00ff88', '#60a5fa'] });
+            addLog(`اكتمل الاستخراج! إجمالي الأرقام: ${extractedNumbers.size}`);
+            systemStatus.innerText = "اكتمل بنجاح";
+            startBtn.disabled = false;
+        };
+
+        function updateUI() {
+            const arr = Array.from(extractedNumbers);
+            resultArea.value = arr.join('\n');
+            uniqueCountDisp.innerText = arr.length;
+        }
+
+        // Tools
+        function copyAll() {
+            navigator.clipboard.writeText(resultArea.value);
+            addLog("تم نسخ جميع الأرقام للحافظة.");
+        }
+
+        function clearAll() {
+            if(confirm("هل تريد مسح جميع البيانات؟")) {
+                extractedNumbers.clear();
+                filesList = [];
+                updateUI();
+                fileCountDisp.innerText = "0";
+                progressBar.style.width = "0%";
+                addLog("تم تصفير النظام.");
+            }
+        }
+
+        function exportTXT() {
+            const blob = new Blob([resultArea.value], { type: 'text/plain' });
+            saveFile(blob, 'X-Numbers.txt');
+        }
+
+        function exportVCF() {
+            const name = document.getElementById('contactName').value || 'User';
+            const vcfData = Array.from(extractedNumbers).map((n, i) => 
+                `BEGIN:VCARD\nVERSION:3.0\nFN:${name} ${i+1}\nTEL;TYPE=CELL:${n}\nEND:VCARD`
+            ).join('\n');
+            const blob = new Blob([vcfData], { type: 'text/vcard' });
+            saveFile(blob, 'X-Contacts.vcf');
+        }
+
+        function saveFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            addLog(`تم تصدير الملف: ${filename}`);
+        }
+    </script>
+</body>
+</html>
